@@ -9,7 +9,8 @@ const char* error_404_title = "Not Found";
 const char* error_404_form = "The requested file was not found on this server.\n";
 const char* error_500_title = "Internal Error";
 const char* error_500_form = "There was an unusual problem serving the requested file.\n";
-const char* doc_root = "/var/www/html";
+const char* doc_root = "/home/yyuanl_yyuanl/myWebServer/src";
+//const char* doc_root = "../src";
 
 int setnonblocking( int fd )
 {
@@ -141,6 +142,9 @@ bool http_conn::read()
     while( true )
     {
         bytes_read = recv( m_sockfd, m_read_buf + m_read_idx, READ_BUFFER_SIZE - m_read_idx, 0 );
+#ifndef NDEBUGE
+        printf("\n============\n[m_log]:recv result is \n%s===============\n", m_read_buf);
+#endif
         if ( bytes_read == -1 )
         {
             if( errno == EAGAIN || errno == EWOULDBLOCK )
@@ -179,6 +183,9 @@ http_conn::HTTP_CODE http_conn::parse_request_line( char* text )
     }
 
     m_url += strspn( m_url, " \t" );
+#ifndef NDEBUGE
+    printf("[m_log]:%s m_murl is %s\n",__func__, m_url);
+#endif
     m_version = strpbrk( m_url, " \t" );
     if ( ! m_version )
     {
@@ -208,6 +215,9 @@ http_conn::HTTP_CODE http_conn::parse_request_line( char* text )
 
 http_conn::HTTP_CODE http_conn::parse_headers( char* text )
 {
+#ifndef NDEBUGE
+    printf("[m_log]:call parse_headers..\n");
+#endif
     if( text[ 0 ] == '\0' )
     {
         if ( m_method == HEAD )
@@ -255,6 +265,9 @@ http_conn::HTTP_CODE http_conn::parse_headers( char* text )
 
 http_conn::HTTP_CODE http_conn::parse_content( char* text )
 {
+#ifndef NDEBUGE
+    printf("[m_log]:parse_content..\n");
+#endif
     if ( m_read_idx >= ( m_content_length + m_checked_idx ) )
     {
         text[ m_content_length ] = '\0';
@@ -276,6 +289,9 @@ http_conn::HTTP_CODE http_conn::process_read()
         text = get_line();
         m_start_line = m_checked_idx;
         printf( "got 1 http line: %s\n", text );
+#ifndef NDEBUGE
+        printf("[m_log]m_check_state is %s\n", (m_check_state == CHECK_STATE_REQUESTLINE)?"CHECK_STATE_REQUESTLINE":"other");
+#endif
 
         switch ( m_check_state )
         {
@@ -284,6 +300,9 @@ http_conn::HTTP_CODE http_conn::process_read()
                 ret = parse_request_line( text );
                 if ( ret == BAD_REQUEST )
                 {
+#ifndef NDEBUGE
+                printf("[m_log]bad request line.. \n");
+#endif
                     return BAD_REQUEST;
                 }
                 break;
@@ -291,6 +310,10 @@ http_conn::HTTP_CODE http_conn::process_read()
             case CHECK_STATE_HEADER:
             {
                 ret = parse_headers( text );
+#ifndef NDEBUGE
+                printf("[m_log]:parse_headers result is %s\n", (ret==GET_REQUEST)?"GET_REQUEST!!":"OTHER");
+#endif
+
                 if ( ret == BAD_REQUEST )
                 {
                     return BAD_REQUEST;
@@ -326,22 +349,38 @@ http_conn::HTTP_CODE http_conn::do_request()
     strcpy( m_real_file, doc_root );
     int len = strlen( doc_root );
     strncpy( m_real_file + len, m_url, FILENAME_LEN - len - 1 );
+#ifndef NDEBUGE
+    printf("[m_log]:path is :%s\n", m_real_file);
+#endif
     if ( stat( m_real_file, &m_file_stat ) < 0 )
     {
+#ifndef NDEBUGE
+        printf("[m_log-----]:file stat is bad\n");
+#endif
         return NO_RESOURCE;
     }
 
     if ( ! ( m_file_stat.st_mode & S_IROTH ) )
     {
+#ifndef NDEBUGE
+        printf("[m_log-----]:file stat is FORBIDDEN_REQUEST\n");
+#endif
         return FORBIDDEN_REQUEST;
     }
 
     if ( S_ISDIR( m_file_stat.st_mode ) )
     {
+#ifndef NDEBUGE
+        printf("[m_log-----]:file stat is BAD_REQUEST\n");
+#endif
         return BAD_REQUEST;
     }
 
     int fd = open( m_real_file, O_RDONLY );
+    assert(fd != -1);
+#ifndef NDEBUGE
+    printf("[m_log========]:open file, fd is %d\n", fd);
+#endif
     m_file_address = ( char* )mmap( 0, m_file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0 );
     close( fd );
     return FILE_REQUEST;
@@ -534,6 +573,9 @@ bool http_conn::process_write( HTTP_CODE ret )
 void http_conn::process()
 {
     HTTP_CODE read_ret = process_read();
+#ifndef NDEBUGE
+    printf("process_read result is %d\n", read_ret);
+#endif
     if ( read_ret == NO_REQUEST )
     {
         modfd( m_epollfd, m_sockfd, EPOLLIN );

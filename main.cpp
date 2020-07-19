@@ -9,9 +9,10 @@
 #include <stdlib.h>
 #include <cassert>
 #include <sys/epoll.h>
+#include <iostream>
 
 #include "./lock/locker.h"
-#include "./threadPool/threadpool.h"
+#include "./threadPool/threadPool.h"
 #include "./ioProcessUnit/http_conn.h"
 
 #define MAX_FD 65536
@@ -127,6 +128,12 @@ int main( int argc, char* argv[] )
             }
             else if( events[i].events & EPOLLIN )
             {
+#ifndef NDEBUDE
+                std::cout<<"======[m_log]====="<<std::endl;
+                std::cout<<sockfd<<" connection is ready to read"<<std::endl;
+                std::cout<<"======[m_log]====="<<std::endl;
+                
+#endif
                 if( users[sockfd].read() )
                 {
                     pool->append( users + sockfd );

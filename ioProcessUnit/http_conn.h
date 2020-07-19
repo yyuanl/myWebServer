@@ -2,6 +2,7 @@
 #define HTTPCONNECTION_H
 
 #include <unistd.h>
+#include <sys/uio.h>
 #include <signal.h>
 #include <sys/types.h>
 #include <sys/epoll.h>
@@ -18,7 +19,7 @@
 #include <sys/mman.h>
 #include <stdarg.h>
 #include <errno.h>
-#include "locker.h"
+#include "../lock/locker.h"
 
 class http_conn
 {
@@ -41,8 +42,10 @@ public:
     void process();
     bool read();
     bool write();
+    int get_sockfd(){return m_sockfd;}
 
 private:
+    
     void init();
     HTTP_CODE process_read();
     bool process_write( HTTP_CODE ret );
@@ -93,5 +96,19 @@ private:
     struct iovec m_iv[2];
     int m_iv_count;
 };
+
+/*
+1.process():工作线程的调用接口
+    1.1 process_read()利用有限状态机不断分析m_read_buf上的数据，直到分析完
+            [   parse_request_line：解析行
+                parse_headers：解析头
+                parse_content：解析内容体
+                当获得整个请求内容时，do_request()把资源拿到程序内存（mmap）,准备好写
+            ]
+    1.2 process_write():负责往socket上写响应内容
+
+2.read():主线程调用接口，采用epoLl的ET模式，循环使用recv()读取socket上的数据，存在m_read_buf，此后该任务加到任务列表，供线程池中process()接口使用
+
+*/
 
 #endif

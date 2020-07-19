@@ -109,6 +109,9 @@ void threadpool< T >::run()
         {
             continue;
         }
+#ifndef NDEBUG
+        printf("!!!!request is %d\n", request->get_sockfd());
+#endif
         request->process();
     }
 }
