@@ -15,15 +15,22 @@ public:
             throw std::exception();
         }
     }
+    sem(int num)
+    {
+        if (sem_init(&m_sem, 0, num) != 0)
+        {
+            throw std::exception();
+        }
+    }
     ~sem()
     {
         sem_destroy( &m_sem );
     }
-    bool wait()
+    bool p()  //p操作
     {
         return sem_wait( &m_sem ) == 0;
     }
-    bool post()
+    bool v()  // v操作
     {
         return sem_post( &m_sem ) == 0;
     }

@@ -14,6 +14,7 @@
 #include "./lock/locker.h"
 #include "./threadPool/threadPool.h"
 #include "./ioProcessUnit/http_conn.h"
+#incldue "./sqlConn/sqlConnPool.h"
 
 #define MAX_FD 65536
 #define MAX_EVENT_NUMBER 10000
@@ -52,8 +53,11 @@ int main( int argc, char* argv[] )
     const char* ip = argv[1];
     int port = atoi( argv[2] );
 
-    addsig( SIGPIPE, SIG_IGN );
-
+    addsig( SIGPIPE, SIG_IGN ); // SIG_IGN 默认信号处理程序
+    
+    //创建数据库连接池
+    sqlConnPool *sql_conn_pool = sqlConnPool::getInstance("localhost", "root", "goodman", "yylwebdb", 1234, 8);
+    // 创建线程池
     threadpool< http_conn >* pool = NULL;
     try
     {
@@ -66,12 +70,14 @@ int main( int argc, char* argv[] )
 
     http_conn* users = new http_conn[ MAX_FD ];
     assert( users );
-    int user_count = 0;
+    //初始化数据库读取表
+    users->initmysql_result(sql_conn_pool);
 
+    int user_count = 0;
     int listenfd = socket( PF_INET, SOCK_STREAM, 0 );
     assert( listenfd >= 0 );
     struct linger tmp = { 1, 0 };
-    setsockopt( listenfd, SOL_SOCKET, SO_LINGER, &tmp, sizeof( tmp ) );
+    setsockopt( listenfd, SOL_SOCKET, SO_LINGER, &tmp, sizeof( tmp ) );   //若有数据待发送，则延迟关闭
 
     int ret = 0;
     struct sockaddr_in address;

@@ -7,7 +7,7 @@
 #include "../lock/locker.h"
 
 
-class sqlConn{
+class sqlConnPool{
 public:
     //单例模式（懒汉）,外部唯一的接口
     static sqlConn *getInstance(string m_ip, string m_user, string m_passWord, string m_dataBastName, int m_port ,unsigned int m_maxConn);
@@ -20,8 +20,8 @@ private:
     sqlConn(unsigned int m_usedConn = 0, unsigned int m_freeConn = 0, string m_ip, string m_user, string m_passWord, string m_dataBastName, int m_port ,unsigned int m_maxConn);
     sqlConn(const sqlConn &conn){}
     sqlConn& operator = (const sqlConn &conn){}
-    void destroyPool();
-    ~sqlConn(){destroyPool();} //释放池中所有连接    
+    void destroyPool(); //close每一个连接资源
+    ~sqlConn(){destroyPool(); //释放池中所有连接    
 // 池属性
 private:
     unsigned int maxConnNum;
@@ -34,10 +34,37 @@ private:
     sem m_sem;
 // 数据库
 private:
-    string m_ip;
-    string m_user;
-    string m_passWord; 
-    string m_dataBastName;
-    int m_port;
+    string ip;
+    string userName;
+    string passWord; 
+    string dataBastName;
+    int port;
 };
+
+class sqlConRALL{
+public:
+    sqlConRALL(MYSQL *&sql_obj, sqlConnPool *sql_conn_pool){  //用户获得的sql连接，用RALL类包装，对象生命周期结束，连接（资源）也自动释放
+        sql_obj = sql_conn_pool->getOneConn();
+        one_conn = sql_obj;
+        pool=sql_conn_pool;
+    }
+    ~sqlConRALL(){
+        pool->realseUsedConn(one_conn);
+    }
+private:
+    MYSQL *one_conn;
+    sqlConnPool *pool;
+};
+
+
+
+
+
+
+
+
+   
+
+
+
 #endif

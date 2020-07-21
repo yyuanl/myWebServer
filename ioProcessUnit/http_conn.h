@@ -19,6 +19,8 @@
 #include <sys/mman.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <mysql/mysql.h>
+#include "../sqlConn/sqlConnPool.h"
 #include "../lock/locker.h"
 
 class http_conn
@@ -43,6 +45,7 @@ public:
     bool read();
     bool write();
     int get_sockfd(){return m_sockfd;}
+    void initmysql_result(sqlConn *connPool);
 
 private:
     
