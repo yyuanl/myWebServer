@@ -78,7 +78,7 @@ bool threadpool< T >::append( T* request )
     }
     m_workqueue.push_back( request );
     m_queuelocker.unlock();
-    m_queuestat.post();
+    m_queuestat.v();
     return true;
 }
 
@@ -95,7 +95,7 @@ void threadpool< T >::run()
 {
     while ( ! m_stop )
     {
-        m_queuestat.wait();
+        m_queuestat.p();
         m_queuelocker.lock();
         if ( m_workqueue.empty() )
         {

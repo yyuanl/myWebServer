@@ -45,7 +45,7 @@ public:
     bool read();
     bool write();
     int get_sockfd(){return m_sockfd;}
-    void initmysql_result(sqlConn *connPool);
+    void initmysql_result(sqlConnPool *connPool);
 
 private:
     
@@ -98,6 +98,9 @@ private:
     struct stat m_file_stat;
     struct iovec m_iv[2];
     int m_iv_count;
+
+    int cgi;        //是否启用的POST
+    char *m_string; //存储请求头数据
 };
 
 /*

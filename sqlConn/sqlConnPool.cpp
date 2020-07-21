@@ -2,7 +2,7 @@
 
 
 /* 外部接口*/
-sqlConnPool *sqlConnPool::getInstance(string m_ip, string m_user, string m_passWord, string m_dataBastName, int m_port ,unsigned int m_maxConn){
+sqlConnPool *sqlConnPool::getInstance(std::string m_ip, std::string m_user, std::string m_passWord, std::string m_dataBastName, int m_port ,unsigned int m_maxConn){
     static sqlConnPool uniquePoolInstance(m_ip,m_user,m_passWord,m_dataBastName, m_port ,m_maxConn);  // 线程安全
     return &uniquePoolInstance;
 }
@@ -40,7 +40,7 @@ int sqlConnPool::getFreeConnNumb(){
 }
 /*  私有成员函数*/
 
-sqlConnPool::sqlConn(string m_ip, string m_userName, string m_passWord, string m_dataBastName, int m_port ,unsigned int m_maxConn)
+sqlConnPool::sqlConnPool(std::string m_ip, std::string m_userName, std::string m_passWord, std::string m_dataBastName, int m_port ,unsigned int m_maxConn)
                     :usedConnNum(0),freeConnNum(0),ip(m_ip),userName(m_userName),passWord(m_passWord),dataBastName(m_dataBastName),
                     port(m_port), maxConnNum(m_maxConn){
     lock.lock();

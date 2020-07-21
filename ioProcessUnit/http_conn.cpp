@@ -13,14 +13,14 @@ const char* error_500_form = "There was an unusual problem serving the requested
 const char* doc_root = "/home/yyuanl_yyuanl/myWebServer/src";
 //const char* doc_root = "../src";
 
-
+using std::map;
 //将表中的用户名和密码放入map
 map<string, string> users;
 locker m_lock;
 void http_conn::initmysql_result(sqlConnPool *connPool){
     //先从连接池获得一个连接
     MYSQL *mysql_obj = NULL;
-    sqlConRALL one_sql_conn_all(mysql_obj, connPool);
+    sqlConRALL one_sql_conn_rall(mysql_obj, connPool);
 
     //在user表中检索username，passwd数据，浏览器端输入
     if (mysql_query(mysql_obj, "SELECT username,password FROM user"))
@@ -206,9 +206,10 @@ http_conn::HTTP_CODE http_conn::parse_request_line( char* text )
     if ( strcasecmp( method, "GET" ) == 0 )
     {
         m_method = GET;
-    }
-    else
-    {
+    }else if(strncasecmp(method, "POST") == 0){
+        m_method = POST;
+        cgi = 1;
+    }else{
         return BAD_REQUEST;
     }
 
@@ -238,6 +239,8 @@ http_conn::HTTP_CODE http_conn::parse_request_line( char* text )
     {
         return BAD_REQUEST;
     }
+    if (m_url[strlen(m_url)-1] == '/')
+        strcat(m_url, "home.html");
 
     m_check_state = CHECK_STATE_HEADER;
     return NO_REQUEST;
@@ -301,6 +304,7 @@ http_conn::HTTP_CODE http_conn::parse_content( char* text )
     if ( m_read_idx >= ( m_content_length + m_checked_idx ) )
     {
         text[ m_content_length ] = '\0';
+        m_string = text;
         return GET_REQUEST;
     }
 

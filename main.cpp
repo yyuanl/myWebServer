@@ -14,7 +14,7 @@
 #include "./lock/locker.h"
 #include "./threadPool/threadPool.h"
 #include "./ioProcessUnit/http_conn.h"
-#incldue "./sqlConn/sqlConnPool.h"
+#include "./sqlConn/sqlConnPool.h"
 
 #define MAX_FD 65536
 #define MAX_EVENT_NUMBER 10000
