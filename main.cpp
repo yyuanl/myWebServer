@@ -45,6 +45,7 @@ void show_error( int connfd, const char* info )
 
 int main( int argc, char* argv[] )
 {
+    
     if( argc <= 2 )
     {
         printf( "usage: %s ip_address port_number\n", basename( argv[0] ) );
@@ -54,9 +55,8 @@ int main( int argc, char* argv[] )
     int port = atoi( argv[2] );
 
     addsig( SIGPIPE, SIG_IGN ); // SIG_IGN 默认信号处理程序
-    
     //创建数据库连接池
-    sqlConnPool *sql_conn_pool = sqlConnPool::getInstance("localhost", "root", "goodman", "yylwebdb", 1234, 8);
+    sqlConnPool *sql_conn_pool = sqlConnPool::getInstance("localhost", "root", "rand", "yylWebDB", 1234, 8);
     // 创建线程池
     threadpool< http_conn >* pool = NULL;
     try
@@ -67,11 +67,11 @@ int main( int argc, char* argv[] )
     {
         return 1;
     }
-
     http_conn* users = new http_conn[ MAX_FD ];
     assert( users );
     //初始化数据库读取表
     users->initmysql_result(sql_conn_pool);
+cout<<"initmysql_result"<<endl;
 
     int user_count = 0;
     int listenfd = socket( PF_INET, SOCK_STREAM, 0 );
@@ -97,7 +97,6 @@ int main( int argc, char* argv[] )
     assert( epollfd != -1 );
     addfd( epollfd, listenfd, false );
     http_conn::m_epollfd = epollfd;
-
     while( true )
     {
         int number = epoll_wait( epollfd, events, MAX_EVENT_NUMBER, -1 );

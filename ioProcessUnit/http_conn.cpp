@@ -10,22 +10,24 @@ const char* error_404_title = "Not Found";
 const char* error_404_form = "The requested file was not found on this server.\n";
 const char* error_500_title = "Internal Error";
 const char* error_500_form = "There was an unusual problem serving the requested file.\n";
-const char* doc_root = "/home/yyuanl_yyuanl/myWebServer/src";
+const char* doc_root = "/home/yyl/myWebServer/src";
 //const char* doc_root = "../src";
 
-using std::map;
+using namespace std;
 //将表中的用户名和密码放入map
 map<string, string> users;
 locker m_lock;
 void http_conn::initmysql_result(sqlConnPool *connPool){
     //先从连接池获得一个连接
     MYSQL *mysql_obj = NULL;
-    sqlConRALL one_sql_conn_rall(mysql_obj, connPool);
+    sqlConRALL one_sql_conn_rall(mysql_obj, connPool);  // 获得了一个mysql连接
 
     //在user表中检索username，passwd数据，浏览器端输入
-    if (mysql_query(mysql_obj, "SELECT username,password FROM user"))
+    if (mysql_query(mysql_obj, "SELECT username,passwd FROM user"))
     {
         //LOG_ERROR("SELECT error:%s\n", mysql_error(mysql));
+        printf("failed to connect:%s\n",mysql_error(mysql_obj));
+		return ;
     }
     //从表中检索完整的结果集
     MYSQL_RES *result = mysql_store_result(mysql_obj);
@@ -206,7 +208,7 @@ http_conn::HTTP_CODE http_conn::parse_request_line( char* text )
     if ( strcasecmp( method, "GET" ) == 0 )
     {
         m_method = GET;
-    }else if(strncasecmp(method, "POST") == 0){
+    }else if(strncasecmp(method, "POST",4) == 0){
         m_method = POST;
         cgi = 1;
     }else{
