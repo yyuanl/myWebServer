@@ -110,6 +110,7 @@ void http_conn::init( int sockfd, const sockaddr_in& addr )
 
 void http_conn::init()
 {
+    mysql = NULL;
     m_check_state = CHECK_STATE_REQUESTLINE;
     m_linger = false;
 
@@ -122,6 +123,7 @@ void http_conn::init()
     m_checked_idx = 0;
     m_read_idx = 0;
     m_write_idx = 0;
+    cgi = 0;
     memset( m_read_buf, '\0', READ_BUFFER_SIZE );
     memset( m_write_buf, '\0', WRITE_BUFFER_SIZE );
     memset( m_real_file, '\0', FILENAME_LEN );
@@ -174,9 +176,7 @@ bool http_conn::read()
     while( true )
     {
         bytes_read = recv( m_sockfd, m_read_buf + m_read_idx, READ_BUFFER_SIZE - m_read_idx, 0 );
-#ifndef NDEBUGE
-        printf("\n============\n[m_log]:recv result is \n%s===============\n", m_read_buf);
-#endif
+
         if ( bytes_read == -1 )
         {
             if( errno == EAGAIN || errno == EWOULDBLOCK )
@@ -216,9 +216,7 @@ http_conn::HTTP_CODE http_conn::parse_request_line( char* text )
     }
 
     m_url += strspn( m_url, " \t" );
-#ifndef NDEBUGE
-    printf("[m_log]:%s m_murl is %s\n",__func__, m_url);
-#endif
+
     m_version = strpbrk( m_url, " \t" );
     if ( ! m_version )
     {
@@ -242,7 +240,7 @@ http_conn::HTTP_CODE http_conn::parse_request_line( char* text )
         return BAD_REQUEST;
     }
     if (m_url[strlen(m_url)-1] == '/')
-        strcat(m_url, "home.html");
+        strcat(m_url, "judge.html");
 
     m_check_state = CHECK_STATE_HEADER;
     return NO_REQUEST;
@@ -250,9 +248,7 @@ http_conn::HTTP_CODE http_conn::parse_request_line( char* text )
 
 http_conn::HTTP_CODE http_conn::parse_headers( char* text )
 {
-#ifndef NDEBUGE
-    printf("[m_log]:call parse_headers..\n");
-#endif
+
     if( text[ 0 ] == '\0' )
     {
         if ( m_method == HEAD )
@@ -300,9 +296,7 @@ http_conn::HTTP_CODE http_conn::parse_headers( char* text )
 
 http_conn::HTTP_CODE http_conn::parse_content( char* text )
 {
-#ifndef NDEBUGE
-    printf("[m_log]:parse_content..\n");
-#endif
+
     if ( m_read_idx >= ( m_content_length + m_checked_idx ) )
     {
         text[ m_content_length ] = '\0';
@@ -325,9 +319,7 @@ http_conn::HTTP_CODE http_conn::process_read()
         text = get_line();
         m_start_line = m_checked_idx;
         printf( "got 1 http line: %s\n", text );
-#ifndef NDEBUGE
-        printf("[m_log]m_check_state is %s\n", (m_check_state == CHECK_STATE_REQUESTLINE)?"CHECK_STATE_REQUESTLINE":"other");
-#endif
+
 
         switch ( m_check_state )
         {
@@ -336,9 +328,6 @@ http_conn::HTTP_CODE http_conn::process_read()
                 ret = parse_request_line( text );
                 if ( ret == BAD_REQUEST )
                 {
-#ifndef NDEBUGE
-                printf("[m_log]bad request line.. \n");
-#endif
                     return BAD_REQUEST;
                 }
                 break;
@@ -346,10 +335,6 @@ http_conn::HTTP_CODE http_conn::process_read()
             case CHECK_STATE_HEADER:
             {
                 ret = parse_headers( text );
-#ifndef NDEBUGE
-                printf("[m_log]:parse_headers result is %s\n", (ret==GET_REQUEST)?"GET_REQUEST!!":"OTHER");
-#endif
-
                 if ( ret == BAD_REQUEST )
                 {
                     return BAD_REQUEST;
@@ -382,44 +367,114 @@ http_conn::HTTP_CODE http_conn::process_read()
 
 http_conn::HTTP_CODE http_conn::do_request()
 {
+#ifndef NDEBUGE
+    printf("===========================in do_request()\n");
+#endif    
     strcpy( m_real_file, doc_root );
     int len = strlen( doc_root );
-    strncpy( m_real_file + len, m_url, FILENAME_LEN - len - 1 );
-#ifndef NDEBUGE
-    printf("[m_log]:path is :%s\n", m_real_file);
-#endif
-    if ( stat( m_real_file, &m_file_stat ) < 0 )
-    {
-#ifndef NDEBUGE
-        printf("[m_log-----]:file stat is bad\n");
-#endif
-        return NO_RESOURCE;
-    }
+    printf("m_url : %s\n", m_url);
+    //strncpy( m_real_file + len, m_url, FILENAME_LEN - len - 1 );
+    const char *p = strchr(m_url, '/');
 
-    if ( ! ( m_file_stat.st_mode & S_IROTH ) )
-    {
+    // 判断
+    if(cgi == 1 && (*(p+1) == '2' || *(p+1) == '3')){
 #ifndef NDEBUGE
-        printf("[m_log-----]:file stat is FORBIDDEN_REQUEST\n");
+    printf("===========================in cai judge part\n");
 #endif
-        return FORBIDDEN_REQUEST;
-    }
+        // 2:       3:
+        //根据标志位判断是登录检测还是注册检测
+        char flag = m_url[1];
+        char *m_url_real = (char *)malloc(sizeof(char)*200);
+        strcpy(m_url_real, "/");
+        strcat(m_url_real, m_url + 2);
+        strncpy( m_real_file + len, m_url_real, FILENAME_LEN - len - 1 );
+        free(m_url_real);
 
-    if ( S_ISDIR( m_file_stat.st_mode ) )
-    {
-#ifndef NDEBUGE
-        printf("[m_log-----]:file stat is BAD_REQUEST\n");
-#endif
-        return BAD_REQUEST;
-    }
+        //提取用户名和密码  user=yyl&passwd=1
+        char name[100], password[100];
+        int i;
+        for(i = 5;m_string[i] != '&'; ++i)
+            name[i-5] = m_string[i];
+        name[i -5] = '\0';
 
-    int fd = open( m_real_file, O_RDONLY );
-    assert(fd != -1);
+        int j = 0;
+        for(i = i + 10;m_string[i] != '\0'; ++i,++j)
+            password[j] = m_string[i];
+        password[j] = '\0';
+
+        //同步线程登录校验
+        if(*(p + 1) == '3'){
+            // 注册需要先判断是否存在用户名
+            // 没有重名 增加用户
+            char *sql_insert = (char*)malloc(sizeof(char)*200);
+            strcpy(sql_insert, "INSERT INTO user(username, passwd)VALUES(");
+            strcat(sql_insert, "'");
+            strcat(sql_insert, name);
+            strcat(sql_insert, "', '");
+            strcat(sql_insert, password);
+            strcat(sql_insert, "')");
+            if(users.find(name) == users.end()){
+                m_lock.lock();
+                int res = mysql_query(mysql, sql_insert); // query成功 返回0
+                users.insert(pair<string, string>(name, password));
+                m_lock.unlock();
+
+                if(!res){
+                    strcpy(m_url, "/log.html");
+                }else{
+                    strcpy(m_url,"/registerError.html");
+                }
+            }else {
+                strcpy(m_url,"/registerError.html");
+            }
+
+        }else if(*(p+1) == '2'){  // 登录
+            if(users.find(name) != users.end() && users[name] == password){
+                strcpy(m_url, "/welcome.html");
+            }else{
+                strcpy(m_url, "/logError.html");
+            }
+        }
+    }//....添加另外状态
+
+    if(*(p+1) == '0'){
+        char *m_url_real = (char*)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/register.html");
+        strncpy(m_real_file + len,  m_url_real, strlen(m_url_real));
+        free(m_url_real);
+    }else if(*(p+1) == '1'){
+        char *m_url_real = (char*)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/log.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+        free(m_url_real);
+    }else if(*(p+1) == '5'){
+        char *m_url_real = (char*)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/picture.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+        free(m_url_real);
+    }else if(*(p+1) == '6'){
+        char *m_url_real = (char*)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/video.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+        free(m_url_real);
+    }else if(*(p+1) == '7'){
+        char *m_url_real = (char*)malloc(sizeof(char) * 200);
+        strcpy(m_url_real, "/fans.html");
+        strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+        free(m_url_real);
+    }else {
+        strncpy(m_real_file + len, m_url, FILENAME_LEN - len - 1);
+    }
+    if(stat(m_real_file, &m_file_stat)<0)   return NO_RESOURCE;
+    if(!(m_file_stat.st_mode & S_IROTH))    return FORBIDDEN_REQUEST;
+    if(S_ISDIR(m_file_stat.st_mode))        return BAD_REQUEST;
 #ifndef NDEBUGE
-    printf("[m_log========]:open file, fd is %d\n", fd);
+printf("===========================finally file is %s\n", m_real_file);
 #endif
-    m_file_address = ( char* )mmap( 0, m_file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0 );
-    close( fd );
-    return FILE_REQUEST;
+        int fd = open(m_real_file, O_RDONLY);
+        m_file_address = (char*)mmap(0,m_file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
+        close(fd);
+        return FILE_REQUEST;
 }
 
 void http_conn::unmap()

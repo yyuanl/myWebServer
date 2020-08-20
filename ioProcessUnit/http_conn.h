@@ -72,6 +72,7 @@ private:
 public:
     static int m_epollfd;
     static int m_user_count;
+    MYSQL *mysql;
 
 private:
     int m_sockfd;
@@ -99,7 +100,7 @@ private:
     struct iovec m_iv[2];
     int m_iv_count;
 
-    int cgi;        //是否启用的POST
+    int cgi;        //是否启用POST
     char *m_string; //存储请求头数据
 };
 

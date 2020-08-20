@@ -39,7 +39,7 @@ private:
     string ip;
     string userNameMysql;  // 登录数据库用户名
     string passWord; 
-    string dataBastName;
+    string dataBaseName;
     string port;
 };
 

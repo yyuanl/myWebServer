@@ -56,7 +56,7 @@ int main( int argc, char* argv[] )
 
     addsig( SIGPIPE, SIG_IGN ); // SIG_IGN 默认信号处理程序
     //创建数据库连接池
-    sqlConnPool *sql_conn_pool = sqlConnPool::getInstance("localhost", "root", "rand", "yylWebDB", 1234, 8);
+    sqlConnPool *sql_conn_pool = sqlConnPool::getInstance("localhost", "root", "rand", "yylWebDB", 3306, 8);  // 数据库IP地址  登录名 密码 仓库名 数据库端口号 数据库连接个数
     // 创建线程池
     threadpool< http_conn >* pool = NULL;
     try

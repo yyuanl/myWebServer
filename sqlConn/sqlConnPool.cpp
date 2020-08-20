@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <iostream>
 using namespace std;
-#define NDEBUG
+// #define NDEBUG
 
 
 /* 外部接口*/
@@ -48,12 +48,12 @@ int sqlConnPool::getFreeConnNumb(){
 }
 /*  私有成员函数*/
 
-sqlConnPool::sqlConnPool(std::string m_ip, std::string m_userNameMysql, std::string m_passWord, std::string m_dataBastName, int m_port ,unsigned int m_maxConn)
+sqlConnPool::sqlConnPool(std::string m_ip, std::string m_userNameMysql, std::string m_passWord, std::string m_dataBaseName, int m_port ,unsigned int m_maxConn)
                     :usedConnNum(0),freeConnNum(0),maxConnNum(m_maxConn), 
                     ip(m_ip),
                     userNameMysql(m_userNameMysql),
                     passWord(m_passWord),
-                    dataBastName(m_dataBastName),
+                    dataBaseName(m_dataBaseName),
                     port(to_string(m_port))
                     
 {
@@ -74,14 +74,15 @@ std::cout<<"check args"<<std::endl;
 printf("ip is %s\n", ip.c_str());
 printf("userName is %s\n", userNameMysql.c_str());
 printf("passWord is %s\n", passWord.c_str());
-printf("dataBastName is %s\n", dataBastName.c_str());
+printf("dataBaseName is %s\n", dataBaseName.c_str());
 printf("m_port is %d\n", m_port);
 #endif
 
-		con = mysql_real_connect(con, ip.c_str(), userNameMysql.c_str(), passWord.c_str(), dataBastName.c_str(), m_port, NULL, 0);
+		con = mysql_real_connect(con, ip.c_str(), userNameMysql.c_str(), passWord.c_str(), dataBaseName.c_str(), 0, NULL, 0);
 		if (con == NULL)
 		{
 			cout << "Error: " << mysql_error(con)<<endl;
+            cout << "Error: " << mysql_errno(con)<<endl;
 #ifndef NDEBUG
 std::cout<<"mysql_real_connect error"<<std::endl;
 #endif    
