@@ -377,7 +377,7 @@ http_conn::HTTP_CODE http_conn::do_request()
     const char *p = strchr(m_url, '/');
 
     // 判断
-    if(cgi == 1 && (*(p+1) == '2' || *(p+1) == '3')){
+    if(cgi == 1 && (*(p+1) == '2' || *(p+1) == '3')){ //post请求 注册或者登录
 #ifndef NDEBUGE
     printf("===========================in cai judge part\n");
 #endif
@@ -402,7 +402,7 @@ http_conn::HTTP_CODE http_conn::do_request()
             password[j] = m_string[i];
         password[j] = '\0';
 
-        //同步线程登录校验
+        //同步线程登录/注册校验
         if(*(p + 1) == '3'){
             // 注册需要先判断是否存在用户名
             // 没有重名 增加用户
@@ -437,6 +437,7 @@ http_conn::HTTP_CODE http_conn::do_request()
         }
     }//....添加另外状态
 
+    //get请求获取资源
     if(*(p+1) == '0'){
         char *m_url_real = (char*)malloc(sizeof(char) * 200);
         strcpy(m_url_real, "/register.html");

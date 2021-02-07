@@ -18,9 +18,22 @@
 
 #define MAX_FD 65536
 #define MAX_EVENT_NUMBER 10000
+#define ALARM_TIME 5
 
 extern int addfd( int epollfd, int fd, bool one_shot );
 extern int removefd( int epollfd, int fd );
+extern int setnonblocking( int fd );
+
+//定时器相关参数
+static int pipefd[2];
+
+void sig_handler(int sig){
+    // 信号到来，简单的往管道写入消息
+    int old_error = errno;
+    int msg = sig;
+    send(pipefd[1], (void *)&msg, 1, 0);
+    errno = old_error;
+}
 
 void addsig( int sig, void( handler )(int), bool restart = true )
 {
@@ -29,7 +42,7 @@ void addsig( int sig, void( handler )(int), bool restart = true )
     sa.sa_handler = handler;
     if( restart )
     {
-        sa.sa_flags |= SA_RESTART;
+        sa.sa_flags |= SA_RESTART; //进程调用某个阻塞系统调用时，收到该信号，进程不会返回而是重新执行系统调用
     }
     sigfillset( &sa.sa_mask );
     assert( sigaction( sig, &sa, NULL ) != -1 );
@@ -42,6 +55,11 @@ void show_error( int connfd, const char* info )
     close( connfd );
 }
 
+void timer_handler(){
+    //...
+    alarm(ALARM_TIME);
+}
+
 
 int main( int argc, char* argv[] )
 {
@@ -51,6 +69,7 @@ int main( int argc, char* argv[] )
         printf( "usage: %s ip_address port_number\n", basename( argv[0] ) );
         return 1;
     }
+     
     const char* ip = argv[1];
     int port = atoi( argv[2] );
 
@@ -97,7 +116,21 @@ cout<<"initmysql_result"<<endl;
     assert( epollfd != -1 );
     addfd( epollfd, listenfd, false );
     http_conn::m_epollfd = epollfd;
-    while( true )
+    
+    // 处理非活动连接相关
+    ret = socketpair(PF_UNIX, SOCK_STREAM, 0, pipefd);
+    assert(ret != -1);
+    setnonblocking(pipefd[1]); // 写端设置为非阻塞
+    addfd(epollfd, pipefd[0], false);  // 同统一事件源，监听管道读端是否有信号到达
+
+    addsig(SIGALRM, sig_handler, false);
+    addsig(SIGTERM, sig_handler, false);
+
+    bool timeout = false;
+    bool stop = false;
+
+    alarm(ALARM_TIME);
+    while(!stop)
     {
         int number = epoll_wait( epollfd, events, MAX_EVENT_NUMBER, -1 );
         if ( ( number < 0 ) && ( errno != EINTR ) )
@@ -129,8 +162,32 @@ cout<<"initmysql_result"<<endl;
             }
             else if( events[i].events & ( EPOLLRDHUP | EPOLLHUP | EPOLLERR ) )
             {
+                //如果有异常直接关闭客户端连接   移除对应的定时器
                 users[sockfd].close_conn();
-            }
+                //....移除定时器操作
+            }else if(sockfd == pipefd[0] && (events[i].events & EPOLLIN)){
+                //处理信号
+                char msgs[10];
+                ret = recv(pipefd[0], (void*)msgs, sizeof(msgs), 0);
+                if(ret == -1){
+                    continue;
+                }else if(ret == 0){
+                    continue;
+                }else{
+                    for(int i = 0; i < ret;i++){
+                        switch (msgs[i])
+                        {
+                        case SIGALRM:
+                            timeout = true;
+                            break;
+                        case SIGTERM:
+                            stop = true;
+                        default:
+                            break;
+                        }
+                    }
+                }
+            }// 处理客户端发送的数据
             else if( events[i].events & EPOLLIN )
             {
 #ifndef NDEBUDE
@@ -141,27 +198,42 @@ cout<<"initmysql_result"<<endl;
 #endif
                 if( users[sockfd].read() )
                 {
+                    // 给连接创建一个定时器对象
                     pool->append( users + sockfd );
+                    //定时器容器相关的处理
                 }
                 else
-                {
+                {   // 定时容器相关操作 回调函数 关闭连接
                     users[sockfd].close_conn();
                 }
+                
             }
             else if( events[i].events & EPOLLOUT )
             {
-                if( !users[sockfd].write() )
+                if( users[sockfd].write() )
                 {
+                    //定时器操作 继续维护活动连接
+                    
+                }else{
+                    // 调用定时器回调函数 删除连接
                     users[sockfd].close_conn();
                 }
             }
             else
             {}
         }
+
+        if(timeout){
+            //当有连接超时 重置定时器 重发alarm信号
+            timer_handler();
+            timeout = false;
+        }
     }
 
     close( epollfd );
     close( listenfd );
+    close(pipefd[0]);
+    close(pipefd[1]);
     delete [] users;
     delete pool;
     return 0;
