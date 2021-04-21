@@ -1,0 +1,393 @@
+2021-04-16 12:03:50.747425 [info]:listen file description is 12
+2021-04-16 12:03:55.747535 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:03:55.747584 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:03:55.747599 [info]:judge fd=14 event
+2021-04-16 12:03:55.747613 [info]:fd=14 event is pipe read event
+2021-04-16 12:04:00.747737 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:04:00.747785 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:04:00.747800 [info]:judge fd=14 event
+2021-04-16 12:04:00.747815 [info]:fd=14 event is pipe read event
+2021-04-16 12:04:05.747936 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:04:05.748018 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:04:05.748041 [info]:judge fd=14 event
+2021-04-16 12:04:05.748055 [info]:fd=14 event is pipe read event
+2021-04-16 12:04:10.748179 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:04:10.748222 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:04:10.748250 [info]:judge fd=14 event
+2021-04-16 12:04:10.748267 [info]:fd=14 event is pipe read event
+2021-04-16 12:04:15.748392 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:04:15.748433 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:04:15.748462 [info]:judge fd=14 event
+2021-04-16 12:04:15.748478 [info]:fd=14 event is pipe read event
+2021-04-16 12:04:20.748615 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:04:20.748681 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:04:20.748696 [info]:judge fd=14 event
+2021-04-16 12:04:20.748710 [info]:fd=14 event is pipe read event
+2021-04-16 12:04:25.748834 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:04:25.748883 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:04:25.748897 [info]:judge fd=14 event
+2021-04-16 12:04:25.748910 [info]:fd=14 event is pipe read event
+2021-04-16 12:04:30.749037 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:04:30.749087 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:04:30.749103 [info]:judge fd=14 event
+2021-04-16 12:04:30.749116 [info]:fd=14 event is pipe read event
+2021-04-16 12:04:34.785780 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:04:34.785810 [info]:judge fd=12 event
+2021-04-16 12:04:34.785852 [info]:fd=12 event is a new connection request
+2021-04-16 12:04:34.785881 [debug]:a new http connection established, fd = 16
+2021-04-16 12:04:35.749237 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:04:35.749281 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:04:35.749295 [info]:judge fd=14 event
+2021-04-16 12:04:35.749308 [info]:fd=14 event is pipe read event
+2021-04-16 12:04:40.749436 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:04:40.749486 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:04:40.749500 [info]:judge fd=14 event
+2021-04-16 12:04:40.749514 [info]:fd=14 event is pipe read event
+2021-04-16 12:04:45.749670 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:04:45.749737 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:04:45.749753 [info]:judge fd=14 event
+2021-04-16 12:04:45.749766 [info]:fd=14 event is pipe read event
+2021-04-16 12:04:50.749896 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:04:50.749940 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:04:50.749956 [info]:judge fd=14 event
+2021-04-16 12:04:50.749969 [info]:fd=14 event is pipe read event
+2021-04-16 12:04:55.750092 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:04:55.750133 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:04:55.750148 [info]:judge fd=14 event
+2021-04-16 12:04:55.750161 [info]:fd=14 event is pipe read event
+2021-04-16 12:05:00.750283 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:05:00.750332 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:00.750347 [info]:judge fd=14 event
+2021-04-16 12:05:00.750360 [info]:fd=14 event is pipe read event
+2021-04-16 12:05:05.750483 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:05:05.750525 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:05.750540 [info]:judge fd=14 event
+2021-04-16 12:05:05.750553 [info]:fd=14 event is pipe read event
+2021-04-16 12:05:10.750751 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:05:10.750794 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:10.750808 [info]:judge fd=14 event
+2021-04-16 12:05:10.750822 [info]:fd=14 event is pipe read event
+2021-04-16 12:05:15.750946 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:05:15.750994 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:15.751009 [info]:judge fd=14 event
+2021-04-16 12:05:15.751023 [info]:fd=14 event is pipe read event
+2021-04-16 12:05:20.751149 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:05:20.751191 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:20.751206 [info]:judge fd=14 event
+2021-04-16 12:05:20.751219 [info]:fd=14 event is pipe read event
+2021-04-16 12:05:25.751386 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:05:25.751453 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:25.751468 [info]:judge fd=14 event
+2021-04-16 12:05:25.751483 [info]:fd=14 event is pipe read event
+2021-04-16 12:05:30.751611 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:05:30.751660 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:30.751675 [info]:judge fd=14 event
+2021-04-16 12:05:30.751688 [info]:fd=14 event is pipe read event
+2021-04-16 12:05:34.873345 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:34.873417 [info]:judge fd=16 event
+2021-04-16 12:05:34.873432 [info]:fd=16 event is read event
+2021-04-16 12:05:35.751816 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:05:35.751865 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:35.751880 [info]:judge fd=14 event
+2021-04-16 12:05:35.751893 [info]:fd=14 event is pipe read event
+2021-04-16 12:05:40.752020 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:05:40.752063 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:40.752078 [info]:judge fd=14 event
+2021-04-16 12:05:40.752093 [info]:fd=14 event is pipe read event
+2021-04-16 12:05:45.752236 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:05:45.752298 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:45.752313 [info]:judge fd=14 event
+2021-04-16 12:05:45.752326 [info]:fd=14 event is pipe read event
+2021-04-16 12:05:50.752450 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:05:50.752493 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:50.752508 [info]:judge fd=14 event
+2021-04-16 12:05:50.752521 [info]:fd=14 event is pipe read event
+2021-04-16 12:05:55.752650 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:05:55.752692 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:55.752706 [info]:judge fd=14 event
+2021-04-16 12:05:55.752720 [info]:fd=14 event is pipe read event
+2021-04-16 12:05:59.285967 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:59.285997 [info]:judge fd=12 event
+2021-04-16 12:05:59.286014 [info]:fd=12 event is a new connection request
+2021-04-16 12:05:59.286041 [debug]:a new http connection established, fd = 16
+2021-04-16 12:05:59.286089 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:59.286103 [info]:judge fd=16 event
+2021-04-16 12:05:59.286115 [info]:fd=16 event is read event
+2021-04-16 12:05:59.286540 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:59.286573 [info]:judge fd=16 event
+2021-04-16 12:05:59.286587 [info]:fd=16 event is write event
+2021-04-16 12:05:59.298382 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:59.298412 [info]:judge fd=16 event
+2021-04-16 12:05:59.298428 [info]:fd=16 event is read event
+2021-04-16 12:05:59.298814 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:05:59.298848 [info]:judge fd=16 event
+2021-04-16 12:05:59.298863 [info]:fd=16 event is write event
+2021-04-16 12:06:00.752842 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:06:00.752891 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:00.752905 [info]:judge fd=14 event
+2021-04-16 12:06:00.752918 [info]:fd=14 event is pipe read event
+2021-04-16 12:06:05.753038 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:06:05.753086 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:05.753101 [info]:judge fd=14 event
+2021-04-16 12:06:05.753155 [info]:fd=14 event is pipe read event
+2021-04-16 12:06:10.753286 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:06:10.753334 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:10.753350 [info]:judge fd=14 event
+2021-04-16 12:06:10.753363 [info]:fd=14 event is pipe read event
+2021-04-16 12:06:12.032024 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:12.032054 [info]:judge fd=16 event
+2021-04-16 12:06:12.032072 [info]:fd=16 event is read event
+2021-04-16 12:06:12.032432 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:12.032466 [info]:judge fd=16 event
+2021-04-16 12:06:12.032485 [info]:fd=16 event is write event
+2021-04-16 12:06:14.824922 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:14.824961 [info]:judge fd=16 event
+2021-04-16 12:06:14.824980 [info]:fd=16 event is read event
+2021-04-16 12:06:14.825415 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:14.825435 [info]:judge fd=16 event
+2021-04-16 12:06:14.825450 [info]:fd=16 event is write event
+2021-04-16 12:06:15.753489 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:06:15.753544 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:15.753562 [info]:judge fd=14 event
+2021-04-16 12:06:15.753579 [info]:fd=14 event is pipe read event
+2021-04-16 12:06:17.492713 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:17.492751 [info]:judge fd=16 event
+2021-04-16 12:06:17.492770 [info]:fd=16 event is read event
+2021-04-16 12:06:17.493195 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:17.493215 [info]:judge fd=16 event
+2021-04-16 12:06:17.493232 [info]:fd=16 event is write event
+2021-04-16 12:06:20.753966 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:06:20.754021 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:20.754041 [info]:judge fd=14 event
+2021-04-16 12:06:20.754058 [info]:fd=14 event is pipe read event
+2021-04-16 12:06:25.754189 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:06:25.754245 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:25.754265 [info]:judge fd=14 event
+2021-04-16 12:06:25.754282 [info]:fd=14 event is pipe read event
+2021-04-16 12:06:27.614019 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:27.614049 [info]:judge fd=16 event
+2021-04-16 12:06:27.614070 [info]:fd=16 event is read event
+2021-04-16 12:06:27.707718 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:27.707751 [info]:judge fd=16 event
+2021-04-16 12:06:27.707766 [info]:fd=16 event is write event
+2021-04-16 12:06:30.754413 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:06:30.754455 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:30.754470 [info]:judge fd=14 event
+2021-04-16 12:06:30.754483 [info]:fd=14 event is pipe read event
+2021-04-16 12:06:33.218015 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:33.218045 [info]:judge fd=16 event
+2021-04-16 12:06:33.218090 [info]:fd=16 event is read event
+2021-04-16 12:06:33.218565 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:33.218598 [info]:judge fd=16 event
+2021-04-16 12:06:33.218612 [info]:fd=16 event is write event
+2021-04-16 12:06:34.825542 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:34.825570 [info]:judge fd=16 event
+2021-04-16 12:06:34.825584 [info]:fd=16 event is read event
+2021-04-16 12:06:34.826017 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:34.826048 [info]:judge fd=16 event
+2021-04-16 12:06:34.826062 [info]:fd=16 event is write event
+2021-04-16 12:06:34.856219 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:34.856248 [info]:judge fd=16 event
+2021-04-16 12:06:34.856262 [info]:fd=16 event is read event
+2021-04-16 12:06:34.856611 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:34.856642 [info]:judge fd=16 event
+2021-04-16 12:06:34.856656 [info]:fd=16 event is write event
+2021-04-16 12:06:35.754604 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:06:35.754647 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:35.754661 [info]:judge fd=14 event
+2021-04-16 12:06:35.754675 [info]:fd=14 event is pipe read event
+2021-04-16 12:06:40.754828 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:06:40.754877 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:40.754891 [info]:judge fd=14 event
+2021-04-16 12:06:40.754905 [info]:fd=14 event is pipe read event
+2021-04-16 12:06:45.755028 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:06:45.755071 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:45.755086 [info]:judge fd=14 event
+2021-04-16 12:06:45.755099 [info]:fd=14 event is pipe read event
+2021-04-16 12:06:50.755224 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:06:50.755267 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:50.755282 [info]:judge fd=14 event
+2021-04-16 12:06:50.755295 [info]:fd=14 event is pipe read event
+2021-04-16 12:06:55.755419 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:06:55.755462 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:06:55.755476 [info]:judge fd=14 event
+2021-04-16 12:06:55.755489 [info]:fd=14 event is pipe read event
+2021-04-16 12:07:00.755610 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:07:00.755653 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:00.755668 [info]:judge fd=14 event
+2021-04-16 12:07:00.755681 [info]:fd=14 event is pipe read event
+2021-04-16 12:07:05.755806 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:07:05.755847 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:05.755862 [info]:judge fd=14 event
+2021-04-16 12:07:05.755875 [info]:fd=14 event is pipe read event
+2021-04-16 12:07:10.756017 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:07:10.756060 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:10.756074 [info]:judge fd=14 event
+2021-04-16 12:07:10.756087 [info]:fd=14 event is pipe read event
+2021-04-16 12:07:15.756172 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:07:15.756215 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:15.756229 [info]:judge fd=14 event
+2021-04-16 12:07:15.756243 [info]:fd=14 event is pipe read event
+2021-04-16 12:07:18.511119 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:18.511148 [info]:judge fd=12 event
+2021-04-16 12:07:18.511169 [info]:fd=12 event is a new connection request
+2021-04-16 12:07:18.511201 [debug]:a new http connection established, fd = 17
+2021-04-16 12:07:18.511252 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:18.511267 [info]:judge fd=17 event
+2021-04-16 12:07:18.511279 [info]:fd=17 event is read event
+2021-04-16 12:07:18.511645 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:18.511677 [info]:judge fd=17 event
+2021-04-16 12:07:18.511692 [info]:fd=17 event is write event
+2021-04-16 12:07:18.594411 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:18.594441 [info]:judge fd=17 event
+2021-04-16 12:07:18.594456 [info]:fd=17 event is read event
+2021-04-16 12:07:18.594817 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:18.594850 [info]:judge fd=17 event
+2021-04-16 12:07:18.594865 [info]:fd=17 event is write event
+2021-04-16 12:07:20.756320 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:07:20.756367 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:20.756381 [info]:judge fd=14 event
+2021-04-16 12:07:20.756394 [info]:fd=14 event is pipe read event
+2021-04-16 12:07:25.756496 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:07:25.756542 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:25.756556 [info]:judge fd=14 event
+2021-04-16 12:07:25.756570 [info]:fd=14 event is pipe read event
+2021-04-16 12:07:30.756671 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:07:30.756713 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:30.756729 [info]:judge fd=14 event
+2021-04-16 12:07:30.756742 [info]:fd=14 event is pipe read event
+2021-04-16 12:07:35.756817 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:07:35.756859 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:35.756873 [info]:judge fd=14 event
+2021-04-16 12:07:35.756887 [info]:fd=14 event is pipe read event
+2021-04-16 12:07:40.757009 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:07:40.757116 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:40.757139 [info]:judge fd=14 event
+2021-04-16 12:07:40.757157 [info]:fd=14 event is pipe read event
+2021-04-16 12:07:45.757268 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:07:45.757341 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:45.757363 [info]:judge fd=14 event
+2021-04-16 12:07:45.757381 [info]:fd=14 event is pipe read event
+2021-04-16 12:07:50.757471 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:07:50.757527 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:50.757547 [info]:judge fd=14 event
+2021-04-16 12:07:50.757564 [info]:fd=14 event is pipe read event
+2021-04-16 12:07:55.757654 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:07:55.757696 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:07:55.757711 [info]:judge fd=14 event
+2021-04-16 12:07:55.757724 [info]:fd=14 event is pipe read event
+2021-04-16 12:08:00.757836 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:08:00.757878 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:08:00.757903 [info]:judge fd=14 event
+2021-04-16 12:08:00.757916 [info]:fd=14 event is pipe read event
+2021-04-16 12:08:05.758002 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:08:05.758047 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:08:05.758061 [info]:judge fd=14 event
+2021-04-16 12:08:05.758074 [info]:fd=14 event is pipe read event
+2021-04-16 12:08:10.758163 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:08:10.758205 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:08:10.758219 [info]:judge fd=14 event
+2021-04-16 12:08:10.758233 [info]:fd=14 event is pipe read event
+2021-04-16 12:08:15.758317 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:08:15.758365 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:08:15.758380 [info]:judge fd=14 event
+2021-04-16 12:08:15.758393 [info]:fd=14 event is pipe read event
+2021-04-16 12:08:20.758502 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:08:20.758546 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:08:20.758560 [info]:judge fd=14 event
+2021-04-16 12:08:20.758573 [info]:fd=14 event is pipe read event
+2021-04-16 12:08:25.758660 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:08:25.758709 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:08:25.758723 [info]:judge fd=14 event
+2021-04-16 12:08:25.758737 [info]:fd=14 event is pipe read event
+2021-04-16 12:08:30.758822 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:08:30.758865 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:08:30.758879 [info]:judge fd=14 event
+2021-04-16 12:08:30.758893 [info]:fd=14 event is pipe read event
+2021-04-16 12:08:35.758982 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:08:35.759025 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:08:35.759040 [info]:judge fd=14 event
+2021-04-16 12:08:35.759053 [info]:fd=14 event is pipe read event
+2021-04-16 12:08:40.759160 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:08:40.759227 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:08:40.759247 [info]:judge fd=14 event
+2021-04-16 12:08:40.759259 [info]:fd=14 event is pipe read event
+2021-04-16 12:08:45.759340 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:08:45.759382 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:08:45.759398 [info]:judge fd=14 event
+2021-04-16 12:08:45.759411 [info]:fd=14 event is pipe read event
+2021-04-16 12:08:50.759522 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:08:50.759575 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:08:50.759589 [info]:judge fd=14 event
+2021-04-16 12:08:50.759602 [info]:fd=14 event is pipe read event
+2021-04-16 12:08:55.759711 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:08:55.759776 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:08:55.759791 [info]:judge fd=14 event
+2021-04-16 12:08:55.759805 [info]:fd=14 event is pipe read event
+2021-04-16 12:09:00.759932 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:09:00.760020 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:00.760071 [info]:judge fd=14 event
+2021-04-16 12:09:00.760087 [info]:fd=14 event is pipe read event
+2021-04-16 12:09:05.760180 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:09:05.760229 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:05.760245 [info]:judge fd=14 event
+2021-04-16 12:09:05.760259 [info]:fd=14 event is pipe read event
+2021-04-16 12:09:10.760382 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:09:10.760427 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:10.760441 [info]:judge fd=14 event
+2021-04-16 12:09:10.760455 [info]:fd=14 event is pipe read event
+2021-04-16 12:09:15.760540 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:09:15.760605 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:15.760619 [info]:judge fd=14 event
+2021-04-16 12:09:15.760634 [info]:fd=14 event is pipe read event
+2021-04-16 12:09:20.760764 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:09:20.760830 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:20.760845 [info]:judge fd=14 event
+2021-04-16 12:09:20.760859 [info]:fd=14 event is pipe read event
+2021-04-16 12:09:25.760950 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:09:25.761000 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:25.761014 [info]:judge fd=14 event
+2021-04-16 12:09:25.761027 [info]:fd=14 event is pipe read event
+2021-04-16 12:09:30.761115 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:09:30.761158 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:30.761176 [info]:judge fd=14 event
+2021-04-16 12:09:30.761190 [info]:fd=14 event is pipe read event
+2021-04-16 12:09:35.761274 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:09:35.761316 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:35.761331 [info]:judge fd=14 event
+2021-04-16 12:09:35.761344 [info]:fd=14 event is pipe read event
+2021-04-16 12:09:40.761485 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:09:40.761553 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:40.761568 [info]:judge fd=14 event
+2021-04-16 12:09:40.761581 [info]:fd=14 event is pipe read event
+2021-04-16 12:09:43.951309 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:43.951339 [info]:judge fd=17 event
+2021-04-16 12:09:43.951358 [info]:fd=17 event is read event
+2021-04-16 12:09:43.951751 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:43.951784 [info]:judge fd=17 event
+2021-04-16 12:09:43.951799 [info]:fd=17 event is write event
+2021-04-16 12:09:45.761678 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:09:45.761721 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:45.761746 [info]:judge fd=14 event
+2021-04-16 12:09:45.761759 [info]:fd=14 event is pipe read event
+2021-04-16 12:09:50.761843 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:09:50.761887 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:50.761902 [info]:judge fd=14 event
+2021-04-16 12:09:50.761915 [info]:fd=14 event is pipe read event
+2021-04-16 12:09:55.762000 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:09:55.762048 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:09:55.762062 [info]:judge fd=14 event
+2021-04-16 12:09:55.762076 [info]:fd=14 event is pipe read event
+2021-04-16 12:10:00.762186 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:10:00.762228 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:10:00.762243 [info]:judge fd=14 event
+2021-04-16 12:10:00.762257 [info]:fd=14 event is pipe read event
+2021-04-16 12:10:05.762340 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:10:05.762388 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:10:05.762403 [info]:judge fd=14 event
+2021-04-16 12:10:05.762416 [info]:fd=14 event is pipe read event
+2021-04-16 12:10:10.762500 [info]:epoll_wait monitor -1 ready event
+2021-04-16 12:10:10.762542 [info]:epoll_wait monitor 1 ready event
+2021-04-16 12:10:10.762557 [info]:judge fd=14 event
+2021-04-16 12:10:10.762571 [info]:fd=14 event is pipe read event
+2021-04-16 12:10:15.762673 [info]:epoll_wait monitor -1 read

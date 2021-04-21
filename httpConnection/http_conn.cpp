@@ -1,4 +1,5 @@
 #include "http_conn.h"
+#include "../utils/utils.h"
 #include <map>
 
 const char* ok_200_title = "OK";
@@ -44,40 +45,7 @@ void http_conn::initmysql_result(sqlConnPool *connPool){
     }
 }
 
-int setnonblocking( int fd )
-{
-    int old_option = fcntl( fd, F_GETFL );
-    int new_option = old_option | O_NONBLOCK;
-    fcntl( fd, F_SETFL, new_option );
-    return old_option;
-}
 
-void addfd( int epollfd, int fd, bool one_shot )
-{
-    epoll_event event;
-    event.data.fd = fd;
-    event.events = EPOLLIN | EPOLLET | EPOLLRDHUP;
-    if( one_shot )
-    {
-        event.events |= EPOLLONESHOT;
-    }
-    epoll_ctl( epollfd, EPOLL_CTL_ADD, fd, &event );
-    setnonblocking( fd );
-}
-
-void removefd( int epollfd, int fd )
-{
-    epoll_ctl( epollfd, EPOLL_CTL_DEL, fd, 0 );
-    close( fd );
-}
-
-void modfd( int epollfd, int fd, int ev )
-{
-    epoll_event event;
-    event.data.fd = fd;
-    event.events = ev | EPOLLET | EPOLLONESHOT | EPOLLRDHUP;
-    epoll_ctl( epollfd, EPOLL_CTL_MOD, fd, &event );
-}
 
 int http_conn::m_user_count = 0;
 int http_conn::m_epollfd = -1;
@@ -93,8 +61,9 @@ void http_conn::close_conn( bool real_close )
     }
 }
 
-void http_conn::init( int sockfd, const sockaddr_in& addr )
+void http_conn::init( int sockfd, const sockaddr_in& addr ,sqlConnPool *connPool)
 {
+    m_connPool = connPool;
     m_sockfd = sockfd;
     m_address = addr;
     int error = 0;
@@ -110,6 +79,8 @@ void http_conn::init( int sockfd, const sockaddr_in& addr )
 
 void http_conn::init()
 {
+    bytes_to_send = 0;
+    bytes_have_send = 0;
     mysql = NULL;
     m_check_state = CHECK_STATE_REQUESTLINE;
     m_linger = false;
@@ -176,6 +147,7 @@ bool http_conn::read()
     while( true )
     {
         bytes_read = recv( m_sockfd, m_read_buf + m_read_idx, READ_BUFFER_SIZE - m_read_idx, 0 );
+        std::cout<<"function: http_conn:read() | bytes_read = "<<bytes_read<<std::endl;
 
         if ( bytes_read == -1 )
         {
@@ -414,8 +386,10 @@ http_conn::HTTP_CODE http_conn::do_request()
             strcat(sql_insert, password);
             strcat(sql_insert, "')");
             if(users.find(name) == users.end()){
+                MYSQL *mysql_obj = NULL;
+                sqlConRALL one_sql_conn_rall(mysql_obj, m_connPool);  // 获得了一个mysql连接
                 m_lock.lock();
-                int res = mysql_query(mysql, sql_insert); // query成功 返回0
+                int res = mysql_query(mysql_obj, sql_insert); // query成功 返回0
                 users.insert(pair<string, string>(name, password));
                 m_lock.unlock();
 
@@ -452,6 +426,7 @@ http_conn::HTTP_CODE http_conn::do_request()
         char *m_url_real = (char*)malloc(sizeof(char) * 200);
         strcpy(m_url_real, "/picture.html");
         strncpy(m_real_file + len, m_url_real, strlen(m_url_real));
+        printf("\n\nsource path is %s \n\n\n",m_real_file);
         free(m_url_real);
     }else if(*(p+1) == '6'){
         char *m_url_real = (char*)malloc(sizeof(char) * 200);
@@ -470,7 +445,7 @@ http_conn::HTTP_CODE http_conn::do_request()
     if(!(m_file_stat.st_mode & S_IROTH))    return FORBIDDEN_REQUEST;
     if(S_ISDIR(m_file_stat.st_mode))        return BAD_REQUEST;
 #ifndef NDEBUGE
-printf("===========================finally file is %s\n", m_real_file);
+printf("===========================finally file is %s and size is %d\n", m_real_file,m_file_stat.st_size);
 #endif
         int fd = open(m_real_file, O_RDONLY);
         m_file_address = (char*)mmap(0,m_file_stat.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
@@ -490,48 +465,107 @@ void http_conn::unmap()
 bool http_conn::write()
 {
     int temp = 0;
-    int bytes_have_send = 0;
-    int bytes_to_send = m_write_idx;
-    if ( bytes_to_send == 0 )
+
+    if (bytes_to_send == 0)
     {
-        modfd( m_epollfd, m_sockfd, EPOLLIN );
+        modfd(m_epollfd, m_sockfd, EPOLLIN);
         init();
         return true;
     }
 
-    while( 1 )
+    while (1)
     {
-        temp = writev( m_sockfd, m_iv, m_iv_count );
-        if ( temp <= -1 )
+        temp = writev(m_sockfd, m_iv, m_iv_count);
+
+        if (temp < 0)
         {
-            if( errno == EAGAIN )
+            if (errno == EAGAIN)
             {
-                modfd( m_epollfd, m_sockfd, EPOLLOUT );
+                modfd(m_epollfd, m_sockfd, EPOLLOUT);
                 return true;
             }
             unmap();
             return false;
         }
 
-        bytes_to_send -= temp;
         bytes_have_send += temp;
-        if ( bytes_to_send <= bytes_have_send )
+        bytes_to_send -= temp;
+        if (bytes_have_send >= m_iv[0].iov_len)// 已经发送的比响应头长
+        {
+            m_iv[0].iov_len = 0;
+            m_iv[1].iov_base = m_file_address + (bytes_have_send - m_write_idx); //更新发送文件的开头指针
+            m_iv[1].iov_len = bytes_to_send;
+        }
+        else
+        {
+            m_iv[0].iov_base = m_write_buf + bytes_have_send;
+            m_iv[0].iov_len = m_iv[0].iov_len - bytes_have_send;
+        }
+
+        if (bytes_to_send <= 0)
         {
             unmap();
-            if( m_linger )
+            modfd(m_epollfd, m_sockfd, EPOLLIN);
+
+            if (m_linger)
             {
                 init();
-                modfd( m_epollfd, m_sockfd, EPOLLIN );
                 return true;
             }
             else
             {
-                modfd( m_epollfd, m_sockfd, EPOLLIN );
                 return false;
-            } 
+            }
         }
     }
 }
+
+
+// bool http_conn::write()
+// {
+//     int temp = 0;
+//     int bytes_have_send = 0;
+//     int bytes_to_send = m_write_idx;
+//     if ( bytes_to_send == 0 )
+//     {
+//         modfd( m_epollfd, m_sockfd, EPOLLIN );
+//         init();
+//         return true;
+//     }
+
+//     while( 1 )
+//     {
+//         temp = writev( m_sockfd, m_iv, m_iv_count );
+//         if ( temp <= -1 )
+//         {
+//             if( errno == EAGAIN )
+//             {
+//                 modfd( m_epollfd, m_sockfd, EPOLLOUT );
+//                 return true;
+//             }
+//             unmap();
+//             return false;
+//         }
+
+//         bytes_to_send -= temp;
+//         bytes_have_send += temp;
+//         if ( bytes_to_send <= bytes_have_send )
+//         {
+//             unmap();
+//             if( m_linger )
+//             {
+//                 init();
+//                 modfd( m_epollfd, m_sockfd, EPOLLIN );
+//                 return true;
+//             }
+//             else
+//             {
+//                 modfd( m_epollfd, m_sockfd, EPOLLIN );
+//                 return false;
+//             } 
+//         }
+//     }
+// }
 
 bool http_conn::add_response( const char* format, ... )
 {
@@ -558,9 +592,7 @@ bool http_conn::add_status_line( int status, const char* title )
 
 bool http_conn::add_headers( int content_len )
 {
-    add_content_length( content_len );
-    add_linger();
-    add_blank_line();
+    return add_content_length( content_len )&&add_linger()&&add_blank_line();
 }
 
 bool http_conn::add_content_length( int content_len )
@@ -627,17 +659,21 @@ bool http_conn::process_write( HTTP_CODE ret )
             }
             break;
         }
-        case FILE_REQUEST:
+        case FILE_REQUEST://文件请求
         {
             add_status_line( 200, ok_200_title );
             if ( m_file_stat.st_size != 0 )
             {
                 add_headers( m_file_stat.st_size );
-                m_iv[ 0 ].iov_base = m_write_buf;
-                m_iv[ 0 ].iov_len = m_write_idx;
-                m_iv[ 1 ].iov_base = m_file_address;
+                cout<<"``````````````````````````````````````````````````"<<endl;
+                printf(m_write_buf);
+                cout<<"``````````````````````````````````````````````````"<<endl;
+                m_iv[ 0 ].iov_base = m_write_buf; //响应头
+                m_iv[ 0 ].iov_len = m_write_idx; // 响应头长度
+                m_iv[ 1 ].iov_base = m_file_address; //真正数据html
                 m_iv[ 1 ].iov_len = m_file_stat.st_size;
                 m_iv_count = 2;
+                bytes_to_send = m_write_idx + m_file_stat.st_size;
                 return true;
             }
             else
@@ -659,6 +695,7 @@ bool http_conn::process_write( HTTP_CODE ret )
     m_iv[ 0 ].iov_base = m_write_buf;
     m_iv[ 0 ].iov_len = m_write_idx;
     m_iv_count = 1;
+    bytes_to_send = m_write_idx;
     return true;
 }
 

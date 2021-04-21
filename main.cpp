@@ -13,56 +13,96 @@
 
 #include "./lock/locker.h"
 #include "./threadPool/threadPool.h"
-#include "./ioProcessUnit/http_conn.h"
+#include "./httpConnection/http_conn.h"
 #include "./sqlConn/sqlConnPool.h"
+#include "./utils/utils.h"
+#include "./log/log.h"
+#include "./log/blockQueue.h"
 
-#define MAX_FD 65536
-#define MAX_EVENT_NUMBER 10000
-#define ALARM_TIME 5
 
-extern int addfd( int epollfd, int fd, bool one_shot );
-extern int removefd( int epollfd, int fd );
-extern int setnonblocking( int fd );
-
-//定时器相关参数
-static int pipefd[2];
-
-void sig_handler(int sig){
-    // 信号到来，简单的往管道写入消息
-    int old_error = errno;
-    int msg = sig;
-    send(pipefd[1], (void *)&msg, 1, 0);
-    errno = old_error;
-}
-
-void addsig( int sig, void( handler )(int), bool restart = true )
-{
-    struct sigaction sa;
-    memset( &sa, '\0', sizeof( sa ) );
-    sa.sa_handler = handler;
-    if( restart )
-    {
-        sa.sa_flags |= SA_RESTART; //进程调用某个阻塞系统调用时，收到该信号，进程不会返回而是重新执行系统调用
-    }
-    sigfillset( &sa.sa_mask );
-    assert( sigaction( sig, &sa, NULL ) != -1 );
-}
-
-void show_error( int connfd, const char* info )
-{
-    printf( "%s", info );
-    send( connfd, info, strlen( info ), 0 );
-    close( connfd );
-}
+extern int pipefd[2];
 
 void timer_handler(){
     //...
     alarm(ALARM_TIME);
 }
 
+#define TEST
 
-int main( int argc, char* argv[] )
-{
+
+void writeTest(int fd, int m_epollfd,int m_sockfd){
+    
+    
+    const char* htmlPath = "/home/yyl/myWebServer/src/picture.html";
+    struct iovec m_iv[2];
+    char messages[ 2048 ];
+    struct stat m_file_stat;
+    memset(messages, '\0', sizeof(messages));
+    stat(htmlPath, &m_file_stat);
+    int file = open(htmlPath, O_RDONLY);
+    char *m_file_address = (char*)mmap(0,m_file_stat.st_size, PROT_READ, MAP_PRIVATE, file, 0);
+    
+    sprintf(messages,"HTTP/1.1 200 OK\r\n");
+    sprintf(messages,"%sContent-Length: %d\r\n",messages,(int)m_file_stat.st_size);
+    sprintf(messages,"%sConnection: keep-alive\r\n",messages);
+    sprintf(messages,"%s\r\n",messages);
+    //printf("%s",messages);
+
+    m_iv[0].iov_base = messages;
+    m_iv[0].iov_len = strlen(messages);
+    m_iv[1].iov_base = m_file_address;
+    m_iv[1].iov_len = m_file_stat.st_size;
+
+    int toSend = m_iv[0].iov_len + m_iv[1].iov_len;
+    int sended = 0;
+    while(1){
+        int retByte;
+        retByte = writev(fd,m_iv,2);
+        if (retByte < 0){
+            if (errno == EAGAIN){
+                modfd(m_epollfd, m_sockfd, EPOLLOUT);
+                break;
+            }
+            break;
+        }
+        toSend -= retByte;
+        sended += retByte;
+        if(sended >= m_iv[0].iov_len){
+            m_iv[1].iov_base = m_file_address + (sended - m_iv[0].iov_len);
+            m_iv[0].iov_len = 0;
+        }else{
+            m_iv[0].iov_base = messages + sended;
+            m_iv[0].iov_len = m_iv[0].iov_len - sended;
+        }
+        if(toSend <= 0){
+            break;
+        }
+    }
+    
+    close(file);
+    munmap( m_file_address, m_file_stat.st_size );
+
+}
+
+int main1(){
+    
+    const char* htmlPath = "/home/yyl/myWebServer/src/picture.html";
+
+    struct stat m_file_stat;
+    stat(htmlPath,&m_file_stat);
+    printf("%d\n", m_file_stat.st_size);
+
+    return 0;
+}
+int main( int argc, char* argv[] ){
+
+#ifdef SYNCLOG
+    Log::getInstance()->init("ServerLog", 2000,800000,0);
+#endif
+
+#ifdef ASYNCLOG
+    Log::getInstance()->init("ServerLog", 2000,800000,8);
+#endif
     
     if( argc <= 2 )
     {
@@ -70,12 +110,13 @@ int main( int argc, char* argv[] )
         return 1;
     }
      
-    const char* ip = argv[1];
+    const char* ip = argv[1];  //
     int port = atoi( argv[2] );
 
-    addsig( SIGPIPE, SIG_IGN ); // SIG_IGN 默认信号处理程序
+    //addsig( SIGPIPE, SIG_IGN );  
+    Signal(SIGPIPE,SIG_IGN);// SIG_IGN 默认信号处理程序 SIGPIPE:向一个没有读用户的管道做写操作
     //创建数据库连接池
-    sqlConnPool *sql_conn_pool = sqlConnPool::getInstance("localhost", "root", "rand", "yylWebDB", 3306, 8);  // 数据库IP地址  登录名 密码 仓库名 数据库端口号 数据库连接个数
+    sqlConnPool *sql_conn_pool = sqlConnPool::getInstance("localhost", "yyl", "123456", "yylWebDB", 3306, 8);  // 数据库IP地址  登录名 密码 仓库名 数据库端口号 数据库连接个数
     // 创建线程池
     threadpool< http_conn >* pool = NULL;
     try
@@ -90,7 +131,7 @@ int main( int argc, char* argv[] )
     assert( users );
     //初始化数据库读取表
     users->initmysql_result(sql_conn_pool);
-cout<<"initmysql_result"<<endl;
+    //cout<<"initmysql_result"<<endl;
 
     int user_count = 0;
     int listenfd = socket( PF_INET, SOCK_STREAM, 0 );
@@ -102,13 +143,13 @@ cout<<"initmysql_result"<<endl;
     struct sockaddr_in address;
     bzero( &address, sizeof( address ) );
     address.sin_family = AF_INET;
-    inet_pton( AF_INET, ip, &address.sin_addr );
-    address.sin_port = htons( port );
+    inet_pton( AF_INET, ip, &address.sin_addr );   //点分十进制转换为二进制
+    address.sin_port = htons( port );  //htons:以网络字节序表示的16位整数
 
-    ret = bind( listenfd, ( struct sockaddr* )&address, sizeof( address ) );
+    ret = bind( listenfd, ( struct sockaddr* )&address, sizeof( address ) );//讲套接字与本机地址关联
     assert( ret >= 0 );
 
-    ret = listen( listenfd, 5 );
+    ret = listen( listenfd, 5 );  // 进行监听，宣告该sockekt愿意接受链接请求；第二个参数含义在linux2.2之后修改，表示完成三次握手等待accept调用的队列长度
     assert( ret >= 0 );
 
     epoll_event events[ MAX_EVENT_NUMBER ];
@@ -123,104 +164,53 @@ cout<<"initmysql_result"<<endl;
     setnonblocking(pipefd[1]); // 写端设置为非阻塞
     addfd(epollfd, pipefd[0], false);  // 同统一事件源，监听管道读端是否有信号到达
 
-    addsig(SIGALRM, sig_handler, false);
-    addsig(SIGTERM, sig_handler, false);
+    // addsig(SIGALRM, sig_handler, false);    //SIGALRM：来自alarm函数的定时器信号
+    // addsig(SIGTERM, sig_handler, false);   //SIGTERM：软件终止信号
+
+    /*设置信号处理函数*/
+    Signal(SIGALRM, sig_handler);//SIGALRM：来自alarm函数的定时器信号
+    Signal(SIGTERM, sig_handler);//SIGTERM：软件终止信号
 
     bool timeout = false;
     bool stop = false;
 
     alarm(ALARM_TIME);
-    while(!stop)
-    {
-        int number = epoll_wait( epollfd, events, MAX_EVENT_NUMBER, -1 );
-        if ( ( number < 0 ) && ( errno != EINTR ) )
-        {
-            printf( "epoll failure\n" );
+    LOG_INFO("listen file description is %d", listenfd);
+    while(!stop){
+        int eventNumber;
+        if((eventNumber = Epoll_wait(epollfd, events, MAX_EVENT_NUMBER, -1 )) == -2){
+            LOG_INFO("epoll_wait monitor %d ready event and while loop break", eventNumber);
             break;
         }
-
-        for ( int i = 0; i < number; i++ )
-        {
+        LOG_INFO("epoll_wait monitor %d ready event", eventNumber);
+        for ( int i = 0; i < eventNumber; i++ ){
             int sockfd = events[i].data.fd;
-            if( sockfd == listenfd )
-            {
-                struct sockaddr_in client_address;
-                socklen_t client_addrlength = sizeof( client_address );
-                int connfd = accept( listenfd, ( struct sockaddr* )&client_address, &client_addrlength );
-                if ( connfd < 0 )
-                {
-                    printf( "errno is: %d\n", errno );
+            LOG_INFO("judge fd=%d event", sockfd);
+            if( sockfd == listenfd ){//新连接请求
+                LOG_INFO("fd=%d event is a new connection request", sockfd);
+                if(clientConnRequest(listenfd, users,sql_conn_pool) == -1){
                     continue;
                 }
-                if( http_conn::m_user_count >= MAX_FD )
-                {
-                    show_error( connfd, "Internal server busy" );
+            }else if(sockfd == pipefd[0] && (events[i].events & EPOLLIN)){  //管道可读端就绪事件
+                LOG_INFO("fd=%d event is pipe read event", sockfd);
+                if(!timerEvent(&timeout, &stop)){
                     continue;
                 }
-                
-                users[connfd].init( connfd, client_address );
+            }else if( events[i].events & EPOLLIN ){  //可读事件
+                LOG_INFO("fd=%d event is read event", sockfd);
+                readEvent(sockfd, users, pool);
+            }else if( events[i].events & EPOLLOUT ){// 发送数据
+                LOG_INFO("fd=%d event is write event", sockfd);
+                writeEvent(sockfd, users);
+                // writeTest(sockfd,epollfd,sockfd);
+                // break;
+            }else if( events[i].events & ( EPOLLRDHUP | EPOLLHUP | EPOLLERR ) ){
+                LOG_INFO("fd=%d event is exception event", sockfd);
+                exceptionEvent(users, sockfd);
+            }else{
+
             }
-            else if( events[i].events & ( EPOLLRDHUP | EPOLLHUP | EPOLLERR ) )
-            {
-                //如果有异常直接关闭客户端连接   移除对应的定时器
-                users[sockfd].close_conn();
-                //....移除定时器操作
-            }else if(sockfd == pipefd[0] && (events[i].events & EPOLLIN)){
-                //处理信号
-                char msgs[10];
-                ret = recv(pipefd[0], (void*)msgs, sizeof(msgs), 0);
-                if(ret == -1){
-                    continue;
-                }else if(ret == 0){
-                    continue;
-                }else{
-                    for(int i = 0; i < ret;i++){
-                        switch (msgs[i])
-                        {
-                        case SIGALRM:
-                            timeout = true;
-                            break;
-                        case SIGTERM:
-                            stop = true;
-                        default:
-                            break;
-                        }
-                    }
-                }
-            }// 处理客户端发送的数据
-            else if( events[i].events & EPOLLIN )
-            {
-#ifndef NDEBUDE
-                std::cout<<"======[m_log]====="<<std::endl;
-                std::cout<<sockfd<<" connection is ready to read"<<std::endl;
-                std::cout<<"======[m_log]====="<<std::endl;
-                
-#endif
-                if( users[sockfd].read() )
-                {
-                    // 给连接创建一个定时器对象
-                    pool->append( users + sockfd );
-                    //定时器容器相关的处理
-                }
-                else
-                {   // 定时容器相关操作 回调函数 关闭连接
-                    users[sockfd].close_conn();
-                }
-                
-            }
-            else if( events[i].events & EPOLLOUT )
-            {
-                if( users[sockfd].write() )
-                {
-                    //定时器操作 继续维护活动连接
-                    
-                }else{
-                    // 调用定时器回调函数 删除连接
-                    users[sockfd].close_conn();
-                }
-            }
-            else
-            {}
+            
         }
 
         if(timeout){
@@ -238,3 +228,12 @@ cout<<"initmysql_result"<<endl;
     delete pool;
     return 0;
 }
+
+
+// int main(){
+// #ifdef SYNCLOG
+//     Log::getInstance()->init("ServerLog", 2000,800000,0);
+// #endif
+//     LOG_INFO("this a log test %d",123424);
+//     return 0;
+// }

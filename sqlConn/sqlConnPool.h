@@ -20,7 +20,7 @@ private:
     //构造  拷贝构造  复制构造 保证单例模式
     sqlConnPool(const sqlConnPool &conn){}
     sqlConnPool(){}
-    sqlConnPool& operator = (const sqlConnPool &conn){}
+    sqlConnPool& operator = (const sqlConnPool &conn){return *this;}
     sqlConnPool(std::string m_ip, std::string m_user, std::string m_passWord, std::string m_dataBastName, int m_port ,unsigned int m_maxConn);
     void destroyPool(); //close每一个连接资源
     ~sqlConnPool(){destroyPool();} //释放池中所有连接    

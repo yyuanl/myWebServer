@@ -39,7 +39,7 @@ public:
     ~http_conn(){}
 
 public:
-    void init( int sockfd, const sockaddr_in& addr );
+    void init( int sockfd, const sockaddr_in& addr ,sqlConnPool *connPool);
     void close_conn( bool real_close = true );
     void process();
     bool read();
@@ -73,6 +73,7 @@ public:
     static int m_epollfd;
     static int m_user_count;
     MYSQL *mysql;
+    sqlConnPool *m_connPool;
 
 private:
     int m_sockfd;
@@ -102,6 +103,8 @@ private:
 
     int cgi;        //是否启用POST
     char *m_string; //存储请求头数据
+    int bytes_to_send;
+    int bytes_have_send;
 };
 
 /*

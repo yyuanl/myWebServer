@@ -61,6 +61,7 @@ public:
     {
         return pthread_mutex_unlock( &m_mutex ) == 0;
     }
+    pthread_mutex_t *getLock(){return &m_mutex;}
 
 private:
     pthread_mutex_t m_mutex;
@@ -86,17 +87,24 @@ public:
         pthread_mutex_destroy( &m_mutex );
         pthread_cond_destroy( &m_cond );
     }
-    bool wait()
-    {
+    bool wait(){ // 使用内部锁
         int ret = 0;
         pthread_mutex_lock( &m_mutex );
         ret = pthread_cond_wait( &m_cond, &m_mutex );
         pthread_mutex_unlock( &m_mutex );
         return ret == 0;
     }
+    bool wait(pthread_mutex_t *mutex){  // 使用外部传入的锁
+        int ret = 0;
+        ret = pthread_cond_wait(&m_cond, mutex);
+        return ret == 0;
+    }
     bool signal()
     {
         return pthread_cond_signal( &m_cond ) == 0;
+    }
+    bool broadcast(){
+        return pthread_cond_broadcast(&m_cond) == 0;
     }
 
 private:
